@@ -15,7 +15,7 @@ public partial class Debug
     [MenuItem("Tools/Console/Clear Console &%#c", priority = 1)]
     private static void ClearMenuItem()
     {
-        if (EditorUtility.DisplayDialog("Clear Debug Console", "Are you sure you want to clear debug console?", "Yes", "Cansel"))
+        if (EditorUtility.DisplayDialog("Clear Debug Console", "Are you sure you want to clear debug console?", "Yes", "Cancel"))
         {
             Clear();
         }
@@ -34,6 +34,9 @@ public partial class Debug
         UnityEngine.Debug.unityLogger.logEnabled = !UnityEngine.Debug.unityLogger.logEnabled;
     }
 
+    /// <summary>
+    /// Clears all messages in the console.
+    /// </summary>
     public static void Clear()
     {
         var assembly = Assembly.GetAssembly(typeof(SceneView));
@@ -61,28 +64,18 @@ public partial class Debug
     {
         get
         {
-            string result = string.Empty;
-            switch (_style)
+            string result = _style switch
             {
-                case Style.bold:
-                    result = "<b>&</b>";
-                    break;
-                case Style.italic:
-                    result = "<i>&</i>";
-                    break;
-                case Style.bolditalic:
-                    result = "<b><i>&</i></b>";
-                    break;
-                default:
-                case Style.none:
-                    result = "&";
-                    break;
-            }
+                Style.bold => "<b>&</b>",
+                Style.italic => "<i>&</i>",
+                Style.bolditalic => "<b><i>&</i></b>",
+                _ => "&",
+            };
             return result;
         }
     }
 
-    private static void ResetThis()
+    private static void Reset()
     {
         _color = Color.white;
         _style = Style.none;
@@ -115,7 +108,7 @@ public partial class Debug
         message = $"<color={ColorString}>{message}</color>";
         message = StyleString.Replace("&", message.ToString());
         UnityEngine.Debug.unityLogger.Log(LogType.Log, message);
-        ResetThis();
+        Reset();
     }
 
     /// <summary>
@@ -128,7 +121,7 @@ public partial class Debug
         message = $"<color={ColorString}>{message}</color>";
         message = StyleString.Replace("&", message.ToString());
         UnityEngine.Debug.unityLogger.Log(LogType.Log, message, context);
-        ResetThis();
+        Reset();
     }
 
     /// <summary>
@@ -141,7 +134,7 @@ public partial class Debug
         message = $"<color={ColorString}>{message}</color>";
         message = StyleString.Replace("&", message.ToString());
         UnityEngine.Debug.unityLogger.Log(LogType.Warning, message);
-        ResetThis();
+        Reset();
     }
 
     /// <summary>
@@ -155,7 +148,7 @@ public partial class Debug
         message = $"<color={ColorString}>{message}</color>";
         message = StyleString.Replace("&", message.ToString());
         UnityEngine.Debug.unityLogger.Log(LogType.Warning, message, context);
-        ResetThis();
+        Reset();
     }
 
     /// <summary>
@@ -168,7 +161,7 @@ public partial class Debug
         message = $"<color={ColorString}>{message}</color>";
         message = StyleString.Replace("&", message.ToString());
         UnityEngine.Debug.unityLogger.Log(LogType.Error, message);
-        ResetThis();
+        Reset();
     }
 
     /// <summary>
@@ -182,7 +175,7 @@ public partial class Debug
         message = $"<color={ColorString}>{message}</color>";
         message = StyleString.Replace("&", message.ToString());
         UnityEngine.Debug.unityLogger.Log(LogType.Error, message, context);
-        ResetThis();
+        Reset();
     }
 
     /// <summary>
@@ -194,7 +187,7 @@ public partial class Debug
         message = $"<color={ColorString}>{message}</color>";
         message = StyleString.Replace("&", message.ToString());
         UnityEngine.Debug.unityLogger.Log(LogType.Assert, message);
-        ResetThis();
+        Reset();
     }
 
     /// <summary>
@@ -207,7 +200,7 @@ public partial class Debug
         message = $"<color={ColorString}>{message}</color>";
         message = StyleString.Replace("&", message.ToString());
         UnityEngine.Debug.unityLogger.Log(LogType.Assert, message, context);
-        ResetThis();
+        Reset();
     }
 
     public static void LogException(System.Exception exception)
@@ -223,7 +216,7 @@ public partial class Debug
 
 public static class ExtColorToNames
 {
-    private static Dictionary<string, Color> _colors = new Dictionary<string, Color>()
+    private static readonly Dictionary<string, Color> colors = new Dictionary<string, Color>()
     {
         ["cyan"] = Color.cyan,
         ["grey"] = Color.grey,
@@ -242,7 +235,7 @@ public static class ExtColorToNames
         string nameColor = "";
         Vector3 cin = new Vector3(color.r, color.g, color.b);
 
-        foreach (KeyValuePair<string, Color> entry in _colors)
+        foreach (KeyValuePair<string, Color> entry in colors)
         {
             Vector3 found = new Vector3(entry.Value.r, entry.Value.g, entry.Value.b);
 
@@ -252,6 +245,6 @@ public static class ExtColorToNames
                 nearest = Vector3.Distance(found, cin);
             }
         }
-        return (nameColor);
+        return nameColor;
     }
 }
