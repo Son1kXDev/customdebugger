@@ -36,6 +36,7 @@ Here's a simple example of how to use the `Console.cs` script:
 
 ```csharp
 using UnityEngine;
+using System.Collections;
 
 public class ExampleScript : MonoBehaviour
 {
